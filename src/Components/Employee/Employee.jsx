@@ -3,19 +3,24 @@ import { InnerLayout } from '../../styles/Layouts'
 import styled from 'styled-components'
 import { trash, edit, left, right, get } from '../../utils/Icons';
 import AddEmployee from '../addModalForm/addEmployee';
+import EditEmployee from '../addModalForm/editEmployee';
 import { useGlobalContext } from '../../context/globalContext';
 export default function Employee() {
     const [isAddModal, setAddModal] = useState(false);
-    const { getEmployee } = useGlobalContext();
+    const [isEditModalOpen, setEditModalOpen] = useState(false); // State to control the edit modal
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+    const { getEmployee, deleteEmployee, getSingleEmployee } = useGlobalContext();
     const [currentPage, setCurrentPage] = useState(1);
     const [startIndex, setStartIndex] = useState(1);
+    const [page, setPage] = useState('');
+    const [totalPage, setTotalPage] = useState('');
     const [search, setSearch] = useState('');
     const [employee, setEmployee] = useState([]);
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
 
 
     useEffect(() => {
         fetchEmployee(currentPage, search);
+
     }, [currentPage, search])
 
 
@@ -23,13 +28,25 @@ export default function Employee() {
         try {
             const response = await getEmployee(page, search);
             setEmployee(response.data.employees);
+            setPage(response.data.page);
+            setTotalPage(response.data.totalPage);
         } catch (error) {
             console.error(error);
         }
     }
+
+    const handleDeleteEmployee = async (id) => {
+        try {
+            await deleteEmployee(id);
+            fetchEmployee(currentPage, search);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const handlePageChange = async (newPage) => {
         setCurrentPage(newPage);
-        setStartIndex((newPage - 1) * 10 + 1);
+        setStartIndex((newPage - 1) * 6 + 1);
         try {
             await getEmployee(newPage, '');
 
@@ -45,6 +62,16 @@ export default function Employee() {
         setAddModal(false);
         fetchEmployee(currentPage, search);
     };
+
+    const openEditModal = (employeeId) => {
+        setSelectedEmployeeId(employeeId);
+        setEditModalOpen(true);
+    };
+
+    const closeEditModal = () => {
+        setEditModalOpen(false);
+    };
+
     return (
         <InnerLayout>
             <UserStyled>
@@ -65,7 +92,7 @@ export default function Employee() {
                         {employee.map((employee, index) => {
                             const id = index + startIndex;
                             const job = employee.job.name || '';
-                            
+
                             return (
                                 <tr key={id}>
                                     <td>{id}</td>
@@ -74,20 +101,84 @@ export default function Employee() {
                                     <td>{employee.phoneNumber}</td>
                                     <td>{job}</td>
                                     <td>
-                                        <img src={`http://localhost:8000${employee.imageUrl}`} style={{height: "50px", width: "50px"}} alt="" />
+                                        <img src={`http://localhost:8000${employee.imageUrl}`} style={{ height: "50px", width: "50px" }} alt="" />
                                     </td>
                                     <td>
-                                        {trash} {edit} {get}
+                                        <button
+                                            style={{
+                                                padding: '4px 12px',
+                                                fontSize: '1rem',
+                                                backgroundColor: '#e74c3c',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                marginRight: '10px',
+                                            }}
+                                            onClick={() => handleDeleteEmployee(employee.uuid)}
+                                        >
+                                            {trash}
+                                        </button>
+                                        <button
+                                            style={{
+                                                padding: '4px 12px',
+                                                fontSize: '1rem',
+                                                backgroundColor: '#3498db',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                marginRight: '10px',
+                                            }}
+                                            onClick={() => openEditModal(employee.uuid)}
+                                        >
+                                            {edit}
+                                        </button>
+                                        <button
+                                            style={{
+                                                padding: '4px 12px',
+                                                fontSize: '1rem',
+                                                backgroundColor: '#3498db',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer',
+                                                marginRight: '10px',
+                                            }}
+                                        // onClick={() => openEditType(transportType.uuid, transportType.nameEn, transportType.nameRu, transportType.nameTr)}
+                                        >
+                                            {get}
+                                        </button>
                                     </td>
                                 </tr>
                             )
                         })}
                     </tbody>
                 </table>
+                <div className='pagination'>
+                    <button
+                        onClick={() => handlePageChange(page - 1)}
+                        disabled={parseInt(page) === 1}
+                    >
+                        {left}
+                    </button>
+                    <span> Page {page} of {totalPage} </span>
+                    <button
+                        onClick={() => handlePageChange(parseInt(page) + 1)}
+                        disabled={parseInt(page) === parseInt(totalPage)}
+                    >
+                        {right}
+                    </button>
+                </div>
             </UserStyled>
             <AddEmployee
                 isopen={isAddModal.toString()}
                 onClose={closeAddModal}
+            />
+            <EditEmployee
+                isOpen={isEditModalOpen}
+                onClose={closeEditModal}
+                employeeId={selectedEmployeeId}
             />
         </InnerLayout>
     )

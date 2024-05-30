@@ -18,7 +18,7 @@ export const dollar = <i className="fa-solid fa-dollar-sign"></i>
 export const calender = <i className="fa-solid fa-calendar"></i>
 export const comment = <i className="fa-solid fa-comment"></i>
 export const plus = <i className="fa-solid fa-circle-plus" style={{cursor: "pointer"}}></i>
-export const trash = <i className="fa-solid fa-trash" style={{color:"red", cursor:"pointer"}}></i>
+export const trash = <i className="fa-solid fa-trash" style={{color:"#fff", cursor:"pointer"}}></i>
 export const signout = <i className="fa-solid fa-right-from-bracket"></i>
 export const takeaway = <i className="fa-solid fa-utensils"></i>
 export const clothing = <i className="fa-solid fa-shirt"></i>
@@ -27,7 +27,7 @@ export const food = <i className="fa-solid fa-bowl-food"></i>
 export const medical = <i className="fa-solid fa-briefcase-medical"></i>
 export const tv = <i className="fa-solid fa-tv"></i>
 export const circle = <i className="fa-solid fa-circle-dot"></i>
-export const get = <i className="fa-solid fa-eye" style={{color: "blue", cursor: "pointer"}}></i>
+export const get = <i className="fa-solid fa-eye" style={{color: "#fff", cursor: "pointer"}}></i>
 export const left = <i className="fa-solid fa-arrow-left"></i>
 export const right = <i className="fa-solid fa-arrow-right"></i>
 export const edit = <i className="fa-solid fa-edit"></i>

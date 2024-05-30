@@ -292,12 +292,10 @@ export const GlobalProvider = ({ children }) => {
         }
     }
 
-    const editEmployee = async (id, name, surname, phoneNumber, jobId, imageUrl) => {
+    const editEmployee = async (id, formData) => {
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.put(`${BASE_URL}admin/employee/edit/${id}`, {
-                name, surname, phoneNumber, jobId, imageUrl
-            }, {headers: {
+            const response = await axios.put(`${BASE_URL}admin/employee/edit/${id}`, formData, {headers: {
                 'authorization': `Bearer ${token}`
             }})
             return response.data;
@@ -318,7 +316,11 @@ export const GlobalProvider = ({ children }) => {
                     'authorization': `Bearer ${token}`
                 }
             })
-            return response.data;
+            if (response.status) {
+                toast.success(response.data.message);
+                return true;
+            }
+            
         } catch (error) {
             if (error.response) {
                 toast.error(error.response.data.message);
