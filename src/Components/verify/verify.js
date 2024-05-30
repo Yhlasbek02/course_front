@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-
+import { useGlobalContext } from '../../context/globalContext';
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -100,6 +100,7 @@ const Timer = styled.div`
 
 export default function Verify() {
   const [otp, setOTP] = useState(['', '', '', '']);
+  const { verifyCode } = useGlobalContext();
   const [showTryAgain, setShowTryAgain] = useState(false);
   const [remainingTime, setRemainingTime] = useState(300); // 5 minutes in seconds
   const [inputsDisabled, setInputsDisabled] = useState(false);
@@ -145,25 +146,20 @@ export default function Verify() {
     }
   };
 
-  async function sendMessage(event) {
-    event.preventDefault();
-    const enteredOTP = otp.join('');
-    const response = await fetch('http://216.250.11.247:8080/api/admin/verify', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        otp: enteredOTP,
-      }),
-    });
-    const data = await response.json();
-    if (data.status) {
-      localStorage.setItem('token', data.token);
-      navigate('/change-password');
-    } else {
-      alert(data.message);
+  const handleSubmit = async (event) => {
+    try {
+      event.preventDefault();
+      const enteredOTP = otp.join('');
+      const isSuccess = await verifyCode(enteredOTP)
+      if (isSuccess) {
+        navigate('/change-password');
+      } else {
+        console.log(isSuccess);
+      }
+    } catch (error) {
+      console.error(error)
     }
+
   }
 
   const minutes = Math.floor(remainingTime / 60);
@@ -171,7 +167,7 @@ export default function Verify() {
 
   return (
     <Container>
-      <Form onSubmit={sendMessage}>
+      <Form onSubmit={handleSubmit}>
         <Title>Verification</Title>
         <Timer>{`${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`}</Timer>
         <Paragraph>Type the verification code <br></br> we've sent you</Paragraph>

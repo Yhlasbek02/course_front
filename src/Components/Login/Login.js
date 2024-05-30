@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import {useGlobalContext} from "../../context/globalContext";
 
 const LoginContainer = styled.div`
   display: flex;
@@ -74,35 +75,26 @@ const RegisterLink = styled.p`
 function App() {
   const [username, setName] = useState('');
   const [password, setPassword] = useState('');
+  const {login} = useGlobalContext();
   const navigate = useNavigate();
 
-  async function loginUser(event) {
-    event.preventDefault();
-
-    const response = await fetch('http://216.250.11.247:8080/api/admin/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-    });
-
-    const data = await response.json();
-    console.log(data);
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      navigate('/');
-    } else {
-      alert(data.message);
+  const handleLogin = async (e) => {
+    try {
+      e.preventDefault();
+      const response = await login(username, password);
+      if (response) {
+        setName('');
+        setPassword('');
+        navigate('/');
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 
   return (
     <LoginContainer>
-      <LoginForm onSubmit={loginUser}>
+      <LoginForm onSubmit={handleLogin}>
         <Title>Yukle</Title>
         <InputField
           value={username}

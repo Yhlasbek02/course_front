@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { useGlobalContext } from '../../context/globalContext';
 
 const Container = styled.div`
   display: flex;
@@ -68,29 +69,24 @@ const SubmitButton = styled.button`
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('');
+    const {forgotPassword} = useGlobalContext();
     const navigate = useNavigate();
-    async function sendMessage(event) {
-        event.preventDefault();
-        const response = await fetch('http://216.250.11.247:8080/api/admin/forgot-password', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email
-            }),
-        });
-        const data = await response.json();
-        if (data.status) {
-            navigate('/verify')
-        } else {
-            alert(data.message)
+    const handleSubmit = async (e) => {
+      try {
+        e.preventDefault();
+        const isSuccess = await forgotPassword(email);
+        if (isSuccess) {
+          setEmail('');
+          navigate('/verify')
         }
+      } catch (error) {
+        console.error(error);
+      }
     }
     return (
         <Container>
-            <Form onSubmit={sendMessage}>
-                <Title>Input your Email, then we will send you a verification code</Title>
+            <Form onSubmit={handleSubmit}>
+                <Title>Input admin email, then we will send you a verification code</Title>
                 <InputField
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}

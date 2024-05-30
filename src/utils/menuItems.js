@@ -1,34 +1,18 @@
 export const menuItems = [
     {
         id: 1,
-        title: 'Users'
+        title: 'Dashboard'
     },
     {
         id: 2,
-        title: "Transports"
+        title: "Employee"
     },
     {
         id: 3,
-        title: "Cargos"
+        title: "Records"
     },
     {
         id: 4,
-        title: "Countries"
-    },
-    {
-        id: 5,
-        title: "Cities",
-    },
-    {
-        id: 6,
-        title: "Messages"
-    },
-    {
-        id: 7,
-        title: "Transport Types"
-    },
-    {
-        id: 8,
-        title: "Cargo Types"
-    },
+        title: "Jobs"
+    }
 ]

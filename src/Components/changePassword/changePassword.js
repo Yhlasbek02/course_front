@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-
+import { useGlobalContext } from '../../context/globalContext';
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -83,32 +83,24 @@ export default function ChangePassword() {
   const [password, setPassword] = useState('');
   const [password_conf, setPassword_Conf] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const {changePassword} = useGlobalContext();
   const navigate = useNavigate();
 
-  async function changePassword(event) {
-    event.preventDefault();
-    const token = localStorage.getItem('token');
-    const response = await fetch('http://216.250.11.247:8080/api/admin/change-password', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        password, password_conf
-      }),
-    });
-    const data = await response.json();
-    if (data.status) {
-      navigate('/');
-    } else {
-      alert(data.message);
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const isSuccess = await changePassword(password, password_conf);
+      if (isSuccess) {
+        navigate('/');
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
 
   return (
     <Container>
-      <Form onSubmit={changePassword}>
+      <Form onSubmit={handleSubmit}>
         <Title>Create new password</Title>
         <InputContainer>
           <InputField

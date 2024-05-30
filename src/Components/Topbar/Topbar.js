@@ -1,49 +1,58 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from '../../context/globalContext';
 import { signout } from '../../utils/Icons';
 
 export default function Topbar() {
-    const { profile, getProfile, logout } = useGlobalContext();
-    const navigate = useNavigate();
-    let isCancelled = useRef(true);
+  const { getProfile } = useGlobalContext();
+  const [username, setUserName] = useState('');
+  const [email, setEmail] = useState('');
+  const navigate = useNavigate();
+  let isCancelled = useRef(true);
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            navigate('/login');
-        } else {
-            if (isCancelled.current) {
-                isCancelled.current = false;
-                getProfile();
-            }
-        }
-    }, []);
 
-    const handleLogout = async () => {
-      localStorage.removeItem('token');
+  const fetchProfile = async () => {
+    try {
+      const response = await getProfile();
+      setUserName(response.data.username);
+      setEmail(response.data.email)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchProfile();
+    const token = localStorage.getItem("token");
+    if (!token) {
       navigate('/login');
-    };
+    } else {
+      if (isCancelled.current) {
+        isCancelled.current = false;
+      }
+    }
+  }, []);
 
-    const username = profile?.username || '';
-    const email = profile?.email || '';
+  const handleLogout = async () => {
+    localStorage.removeItem('token');
+    navigate('/admin/login');
+  };
+  return (
+    <TopStyled>
+      <i className="fas fa-user-circle"></i>
+      <div className='right'>
+        <h2>{username}</h2>
+        <p>{email}</p>
+      </div>
 
-    return (
-        <TopStyled>
-            <i className="fas fa-user-circle"></i>
-            <div className='right'>
-                <h2>{username}</h2>
-                <p>{email}</p>
-            </div>
-
-            <div className='left'>
-                <li onClick={handleLogout}>
-                    {signout}
-                </li>
-            </div>
-        </TopStyled>
-    );
+      <div className='left'>
+        <li onClick={handleLogout}>
+          {signout}
+        </li>
+      </div>
+    </TopStyled>
+  );
 }
 
 const TopStyled = styled.div`

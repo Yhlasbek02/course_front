@@ -4,15 +4,11 @@ import { MainLayout } from '../../styles/Layouts'
 import Navigation from '../Navigation/Navigation'
 import { useNavigate } from 'react-router-dom';
 import Topbar from '../Topbar/Topbar';
-import Users from '../Users/Users';
-import Transports from '../Transports/Transports';
-import Cargos from '../Cargos/Cargos';
-import Countries from '../Countries/Countries';
-import Messages from '../Messages/Messages';
-import TransportTypes from '../TransportTypes/TransportTypes';
-import CargoTypes from '../CargoTypes/CargoTypes';
-import Cities from '../Cities/Cities';
 
+import Dashboard from '../Dashboard/Dashboard';
+import Jobs from '../Jobs/Jobs';
+import Employee from '../Employee/Employee';
+import Records from '../Records/Records';
 function Main() {
     const [active, setActive] = useState(1)
     const navigate = useNavigate();
@@ -20,29 +16,21 @@ function Main() {
         const storedToken = localStorage.getItem('token');
 
         if (!storedToken) {
-            navigate('/login');
+            navigate('/admin/login');
         }
     }, [navigate]);
     const displayData = () => {
         switch (active) {
             case 1:
-                return <Users />
+                return <Dashboard />
             case 2:
-                return <Transports />
+                return <Employee />
             case 3:
-                return <Cargos />
+                return <Records />
             case 4:
-                return <Countries />
-            case 5: 
-                return <Cities />
-            case 6:
-                return <Messages />
-            case 7:
-                return <TransportTypes />
-            case 8:
-                return <CargoTypes />
+                return <Jobs />
             default:
-                return <Users />
+                return <Employee />
         }
     }
 

@@ -7,7 +7,7 @@ import Verify from './Components/verify/verify';
 import ChangePassword from './Components/changePassword/changePassword';
 const router = createBrowserRouter([
   {
-    path: '/login',
+    path: '/admin/login',
     element: <Login />
   },
   {
